@@ -1,21 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Dependencies } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import knexLib from 'knex';
 
 @Injectable()
+@Dependencies(ConfigService)
 export class VideosService {
 
-  constructor() {
-    this.knex = knexLib({
-      client: 'pg',
-      connection: {
-        host: 'localhost',
-        port: 5432,
-        user: 'postgres',
-        password: 'test',
-        database: 'videostorage',
-      }
-    });
+  constructor(configService) {
+    this.configService = configService;
+
+    this.knex = knexLib(
+      this.configService.get('db')
+    );
   }
 
   getAllVideos() {
